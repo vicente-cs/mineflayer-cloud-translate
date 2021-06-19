@@ -1,0 +1,23 @@
+{
+  "name": "mineflayer-cloud-translate",
+  "version": "1.0.0",
+  "description": "A mineflayer plugin for automatic chat text translation",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node ./test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vicente-cs/mineflayer-cloud-translate.git"
+  },
+  "author": "vicente-cs",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vicente-cs/mineflayer-cloud-translate/issues"
+  },
+  "homepage": "https://github.com/vicente-cs/mineflayer-cloud-translate#readme"
+}
