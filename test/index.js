@@ -1,7 +1,7 @@
 const mineflayer = require("mineflayer")
 require('dotenv').config();
 const CREDENTIALS = JSON.parse(process.env.CREDENTIALS);
-const translator = require("../index.js")(CREDENTIALS, "Notch")
+const translator = require("../index.js")(CREDENTIALS, "Buomdax")
 
 const bot = mineflayer.createBot({
     host: process.env.HOST,
