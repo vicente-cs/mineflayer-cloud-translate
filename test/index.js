@@ -1,17 +1,29 @@
 const mineflayer = require("mineflayer")
 require('dotenv').config();
-const CREDENTIALS = JSON.parse(process.env.CREDENTIALS);
-const translator = require("../index.js")(CREDENTIALS, "Buomdax")
+const translator = require("../index.js")("Buomdax")
 
-const bot = mineflayer.createBot({
-    host: process.env.HOST,
-    port: process.env.PORT,
-    username: "Translator"
-  });
+const translator_bot = mineflayer.createBot({
+  host: process.env.HOST,
+  port: process.env.PORT,
+  username: "Translator"
+});
 
-bot.loadPlugin(translator);
+const speaker_bot = mineflayer.createBot({
+  host: process.env.HOST,
+  port: process.env.PORT,
+  username: "Speaker"
+});
 
-bot.once("spawn", () => {
-    bot.translator.enable();
-    console.log(bot.translator)
-})
+translator_bot.loadPlugin(translator);
+
+translator_bot.once("spawn", () => {
+  translator_bot.translator.enable();
+});
+
+speaker_bot.on("chat", (username, message) => {
+  if (username == speaker_bot.username) return;
+
+  if (message == ".speak") {
+    speaker_bot.chat(`¡Buenos días, ${username}!`) 
+  }
+});

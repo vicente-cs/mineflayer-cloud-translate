@@ -1,8 +1,9 @@
-const {Translate} = require('@google-cloud/translate').v2;
+//TODO: add exception handlers
+
 const commands = require("./lib/commands/index")
+const translateText = require("./lib/utils/translate_text")
 
-
-function init(bot, credentials, op) {
+function init(bot, op) {
   var disabled = true;
 
   bot.translator = {};
@@ -36,6 +37,8 @@ function init(bot, credentials, op) {
 
   bot.on("chat", (username, message, msg_translate, jsonMsg) => {
 
+    settings = bot.translator.settings
+
     //Handles incoming /tell messages
     if (msg_translate == "commands.message.display.incoming") {
       username = jsonMsg["with"][0]["text"]
@@ -45,21 +48,6 @@ function init(bot, credentials, op) {
     if (msg_translate == "commands.message.display.outgoing") {return;}
 
     if (disabled) return;
-
-    const translate = new Translate({
-      credentials: credentials,
-      projectId: credentials.project_id
-    });
-
-    const translateText = async (text, targetLanguage) => {
-      try {
-        let [response] = await translate.translate(text, targetLanguage);
-        return response;
-      } catch (error) {
-        console.log(`Error at translateText --> ${error}`);
-        return 0;
-      }
-    };
 
     function getParams(text, error = "Parameter error!") {
       if (!text.includes(" ")) {
@@ -76,85 +64,10 @@ function init(bot, credentials, op) {
     (username == bot.translator.settings.op)) {
       const userCommand = message.replace(bot.translator.commandPrefix, "").split(" ")[0];
       const params = getParams(message)
-      // const commandList = bot.translator.commands.commandList;
-      console.log(userCommand)
+
+      if (!(userCommand in commands)) return
       commands[userCommand](bot, username, params)
-      console.log(bot.translator.settings.translate_all)
-
-      // if (command.startsWith(commandList.translate_all)) {
-      //   const param = getParams(command)[0];
-      //   const rules = { //TODO: optimize this spaghetti
-      //     "true": true,
-      //     "false": false
-      //   };
-  
-      //   if (!(param in rules)) {
-      //     bot.whisper(username, "Invalid Parameter");
-      //     return;
-      //   }
-  
-      //   bot.whisper(username, `Sucessfully changed to ${param}`);
-      //   bot.translator.settings.translate_all = rules[param];
-      // }
-
-
-      // if (command.startsWith(commandList.set_language)) {
-      //   const params = getParams(command);
-      //   const target = params[0];
-      //   const lang_param = params[1];
-
-      //   translateText(".".toString(), lang_param).then((res) => {
-      //     if (typeof (res) == "number") bot.whisper(username, "Error! Invalid Language")
-      //     else {
-      //       switch(target) {
-      //         case "server":
-      //           bot.translator.settings.server_lang = lang_param;
-      //           break;
-              
-      //         case "op":
-      //           bot.translator.settings.server_lang = lang_param;
-      //           break;
-
-      //         default:
-      //           bot.whisper(username, "Error! Target not defined");
-      //           return;
-      //       }
-      //       bot.whisper(username, `Language set to ${lang_param}!`);
-      //     }
-      //   })
-      //     .catch((err) => {
-      //       bot.whisper(username, `Error: ${err}`);
-      //     });
-      // }
-
-
-      // if (command.startsWith(commandList.translate_list)) {
-      //   //First param: "add" or "remove", second param is the player
-      //   const params = getParams(command);
-      //   const second_param = params[0];
-      //   const player = params[1];
-
-      //   switch (second_param) {
-      //     case "add":
-      //       bot.translator.players.push(player);
-      //       bot.whisper(username, "Sucess!");
-      //       break;
-
-      //     case "remove":
-      //       if (!bot.translator.players.includes(player)) {
-      //         bot.whisper(username, "Error: player not in player list!");
-      //         return;
-      //       }
-      //       bot.translator.players = bot.translator.players.filter(item => item !== player);
-      //       bot.whisper(username, `${player} removed from list!`);
-      //       break;
-
-      //     default:
-      //       bot.whisper(username, "Undefined parameter!");
-      //       break;
-      //   }
-      // }
-    }
+      }
 
     else {
       //If OP is speaking, bot will traduce message to server's language
@@ -164,6 +77,7 @@ function init(bot, credentials, op) {
 
       else {
         language = bot.translator.settings.op_lang;
+        //Returns if translate_all is false and player is not in translatelist
         if (!(bot.translator.settings.translate_all || 
           bot.translator.players.includes(username))) {return;}
         sendText = (text) => {bot.whisper(bot.translator.settings.op,text)}
@@ -179,8 +93,8 @@ function init(bot, credentials, op) {
   })
 }
 
-module.exports = function (credentials, op) {
+module.exports = function (op) {
   return function (bot) {
-    init(bot, credentials, op);
+    init(bot, op);
   }
 }
