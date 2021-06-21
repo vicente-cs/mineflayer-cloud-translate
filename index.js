@@ -27,13 +27,6 @@ function init(bot, op) {
 
   bot.translator.commandPrefix = ".";
 
-  // //That holds support for special character commands
-  // bot.translator.commands.commandList = {
-  //   set_language: "setlanguage",
-  //   "translate_list": "playerlist",
-  //   translate_all: "translateall"
-  // };
-
 
   bot.on("chat", (username, message, msg_translate, jsonMsg) => {
 
