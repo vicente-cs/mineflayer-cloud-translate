@@ -24,7 +24,7 @@
 In order to use the Cloud Translation API, A Google Application Credentials file is needed.<br/>
 You can acquire it by following [this tutorial](https://cloud.google.com/translate/docs/setup).
 
-### in .env
+### On .env
 
 ```
 GOOGLE_APPLICATION_CREDENTIALS = <CREDENTIALS FILEPATH>
@@ -52,10 +52,10 @@ bot.once("spawn", () => {
 
 ## Commands
 
-The bot listens to commands outputed into the Minecraft chat<br/>
+The bot listens to Minecraft chat messages to receive commands<br/>
 Cloud Translation uses [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to determine which language the text should be translated to
 
-- `.setlanguage (server/op) <language>` sets server and op language
+- `.setlanguage (server/op) <language>` sets server or op language
 - `.translateall (true/false)` if true, translates all incoming text
 - `translatelist (add/remove) <player>` If ".translateall" is false, only players on translatelist will have their messages translated to op's language
 
