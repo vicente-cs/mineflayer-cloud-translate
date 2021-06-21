@@ -87,7 +87,7 @@ function init(bot, op) {
         sendText(res.toString());
       })
         .catch((err) => {
-          bot.whisper(username, err.toString());
+          bot.whisper(bot.translator.settings.op, err.toString());
         });
     }
   })
