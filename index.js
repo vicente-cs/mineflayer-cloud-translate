@@ -3,33 +3,38 @@
 const commands = require("./lib/commands/index")
 const translateText = require("./lib/utils/translate_text")
 
-function init(bot, op) {
-  var disabled = true;
-
+function init(bot) {
   bot.translator = {};
 
-  bot.translator.enable = function enable(){
+  bot.translator.players = [];
+
+  bot.translator.settings = {
+    op: undefined, 
+    op_lang: "en", 
+    server_lang: "es", 
+    translate_all: false
+  };
+
+  var disabled = true;
+
+  bot.translator.enable = function enable(op){
+    if(!!op && typeof op == "string") {
+      bot.translator.settings.op = op
+    }
+
     disabled = false;
   };
 
   bot.translator.disable = function disable(){
     disabled = false;
   };
-
-  bot.translator.players = [];
-
-  bot.translator.settings = {
-    op: op, 
-    op_lang: "en", 
-    server_lang: "es", 
-    translate_all: false
-  };
-
   bot.translator.commandPrefix = ".";
 
 
   bot.on("chat", (username, message, msg_translate, jsonMsg) => {
 
+    if (disabled) return;
+  
     settings = bot.translator.settings
 
     //Handles incoming /tell messages
@@ -39,8 +44,6 @@ function init(bot, op) {
     
     //This line makes "bot.whisper()" work without recursions
     if (msg_translate == "commands.message.display.outgoing") {return;}
-
-    if (disabled) return;
 
     function getParams(text, error = "Parameter error!") {
       if (!text.includes(" ")) {
@@ -86,8 +89,4 @@ function init(bot, op) {
   })
 }
 
-module.exports = function (op) {
-  return function (bot) {
-    init(bot, op);
-  }
-}
+module.exports = init

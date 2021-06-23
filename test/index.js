@@ -1,23 +1,26 @@
 const mineflayer = require("mineflayer")
 require('dotenv').config();
-const translator = require("../index.js")("Buomdax")
+const translator = require("../index.js")
+
+HOST = process.env.HOST
+PORT = process.env.PORT
 
 const translator_bot = mineflayer.createBot({
-  host: process.env.HOST,
-  port: process.env.PORT,
+  host: HOST,
+  port: PORT,
   username: "Translator"
 });
 
 const speaker_bot = mineflayer.createBot({
-  host: process.env.HOST,
-  port: process.env.PORT,
+  host: HOST,
+  port: PORT,
   username: "Speaker"
 });
 
 translator_bot.loadPlugin(translator);
 
 translator_bot.once("spawn", () => {
-  translator_bot.translator.enable();
+  translator_bot.translator.enable(process.env.MINECRAFT_USERNAME);
 });
 
 speaker_bot.on("chat", (username, message) => {
