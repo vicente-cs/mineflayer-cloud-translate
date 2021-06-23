@@ -35,7 +35,7 @@ GOOGLE_APPLICATION_CREDENTIALS = <CREDENTIALS FILEPATH>
 ```js
 const mineflayer = require("mineflayer")
 require('dotenv').config();
-const translator = require("../index.js")
+const translator = require("mineflayer-cloud-translate")
 
 const bot = mineflayer.createBot({
   host: process.env.HOST,
