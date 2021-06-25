@@ -36,6 +36,8 @@ function init(bot) {
     if (disabled) return;
   
     settings = bot.translator.settings
+    players = bot.translator.players
+    commandPrefix = bot.translator.commandPrefix
 
     //Handles incoming /tell messages
     if (msg_translate == "commands.message.display.incoming") {
@@ -55,10 +57,10 @@ function init(bot) {
     //Non-chat phrases start with "]"
     if (username == bot.username || message.substr(-1) == "]") {return;}
 
-    //Commands
-    if (message.startsWith(bot.translator.commandPrefix) && 
-    (username == bot.translator.settings.op)) {
-      const userCommand = message.replace(bot.translator.commandPrefix, "").split(" ")[0];
+    //Verify if commmands were input
+    if (message.startsWith(commandPrefix) && 
+    (username == settings.op)) {
+      const userCommand = message.replace(commandPrefix, "").split(" ")[0];
       const params = getParams(message)
 
       if (!(userCommand in commands)) return
@@ -67,20 +69,22 @@ function init(bot) {
 
     else {
       //If OP is speaking, bot will traduce message to server's language
-      if (username == bot.translator.settings.op) {
-        sendText = (text) => {bot.chat(text)}
-        language = bot.translator.settings.server_lang;
+      if (username == settings.op) {
+        sendText = (text) => {
+          bot.chat(text)
+        }
+        language = settings.server_lang;
       }
 
       else {
-        language = bot.translator.settings.op_lang;
+        language = settings.op_lang;
 
         //Returns if translate_all is false and player is not in translatelist
-        if (!(bot.translator.settings.translate_all || 
-          bot.translator.players.includes(username))) {return;}
+        if (!(settings.translate_all || 
+          players.includes(username))) {return;}
   
         sendText = (text) => {
-          bot.whisper(bot.translator.settings.op,`${username}: ${text}`)
+          bot.whisper(settings.op,`${username}: ${text}`)
         }
       }
 
@@ -88,7 +92,7 @@ function init(bot) {
         sendText(res.toString());
       })
         .catch((err) => {
-          bot.whisper(bot.translator.settings.op, err.toString());
+          bot.whisper(settings.op, err.toString());
         });
     }
   })
