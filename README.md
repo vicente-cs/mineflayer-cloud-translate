@@ -64,7 +64,7 @@ Cloud Translation uses [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_I
 
 - `.setlanguage (server/op) <language>` sets server or op language
 - `.translateall (true/false)` if true, translates all incoming text
-- `translatelist (add/remove) <player>` If ".translateall" is false, only players on translatelist will have their messages translated to op's language
+- `.translatelist (add/remove) <player>` If ".translateall" is false, only players on translatelist will have their messages translated to op's language
 
 Once the bot is on, every op message, except commands, will be translated to the server language.
 
