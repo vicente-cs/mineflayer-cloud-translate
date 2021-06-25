@@ -69,14 +69,19 @@ function init(bot) {
       //If OP is speaking, bot will traduce message to server's language
       if (username == bot.translator.settings.op) {
         sendText = (text) => {bot.chat(text)}
-        language = bot.translator.settings.server_lang;}
+        language = bot.translator.settings.server_lang;
+      }
 
       else {
         language = bot.translator.settings.op_lang;
+
         //Returns if translate_all is false and player is not in translatelist
         if (!(bot.translator.settings.translate_all || 
           bot.translator.players.includes(username))) {return;}
-        sendText = (text) => {bot.whisper(bot.translator.settings.op,text)}
+  
+        sendText = (text) => {
+          bot.whisper(bot.translator.settings.op,`${username}: ${text}`)
+        }
       }
 
       translateText(message.toString(), language).then((res) => {
