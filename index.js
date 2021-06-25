@@ -9,23 +9,23 @@ function init(bot) {
   bot.translator.players = [];
 
   bot.translator.settings = {
-    op: undefined, 
-    op_lang: "en", 
-    server_lang: "es", 
+    op: undefined,
+    op_lang: "en",
+    server_lang: "es",
     translate_all: false
   };
 
   var disabled = true;
 
-  bot.translator.enable = function enable(op){
-    if(!!op && typeof op == "string") {
+  bot.translator.enable = function enable(op) {
+    if (!!op && typeof op == "string") {
       bot.translator.settings.op = op
     }
 
     disabled = false;
   };
 
-  bot.translator.disable = function disable(){
+  bot.translator.disable = function disable() {
     disabled = false;
   };
   bot.translator.commandPrefix = ".";
@@ -34,7 +34,10 @@ function init(bot) {
   bot.on("chat", (username, message, msg_translate, jsonMsg) => {
 
     if (disabled) return;
-  
+
+    //This line makes "bot.whisper()" work without recursions
+    if (msg_translate == "commands.message.display.outgoing") { return; }
+
     settings = bot.translator.settings
     players = bot.translator.players
     commandPrefix = bot.translator.commandPrefix
@@ -43,9 +46,6 @@ function init(bot) {
     if (msg_translate == "commands.message.display.incoming") {
       username = jsonMsg["with"][0]["text"]
     }
-    
-    //This line makes "bot.whisper()" work without recursions
-    if (msg_translate == "commands.message.display.outgoing") {return;}
 
     function getParams(text, error = "Parameter error!") {
       if (!text.includes(" ")) {
@@ -55,45 +55,37 @@ function init(bot) {
     }
 
     //Non-chat phrases start with "]"
-    if (username == bot.username || message.substr(-1) == "]") {return;}
+    if (username == bot.username || message.substr(-1) == "]") { return; }
 
     //Verify if commmands were input
-    if (message.startsWith(commandPrefix) && 
-    (username == settings.op)) {
-      const userCommand = message.replace(commandPrefix, "").split(" ")[0];
-      const params = getParams(message)
+    if (message.startsWith(commandPrefix) &&
+      (username == settings.op)) {
 
-      if (!(userCommand in commands)) return
+      const userCommand = message.replace(commandPrefix, "").split(" ")[0];
+      if (!(userCommand in commands)) { return; }
+
+      const params = getParams(message);
+
       commands[userCommand](bot, username, params)
-      }
+    }
 
     else {
       //If OP is speaking, bot will traduce message to server's language
+      function sendTranslation(language, func) {
+        translateText(message.toString(), language).then((res) => func(res))
+          .catch((err) => {
+            bot.whisper(settings.op, err.toString());
+          });
+      }
+
       if (username == settings.op) {
-        sendText = (text) => {
-          bot.chat(text)
-        }
-        language = settings.server_lang;
+        sendTranslation(settings.server_lang, (res) => bot.chat(res));
       }
 
-      else {
-        language = settings.op_lang;
-
-        //Returns if translate_all is false and player is not in translatelist
-        if (!(settings.translate_all || 
-          players.includes(username))) {return;}
-  
-        sendText = (text) => {
-          bot.whisper(settings.op,`${username}: ${text}`)
-        }
+      else if (settings.translate_all || players.includes(username)) {
+        sendTranslation(settings.op_lang, (res) =>
+          bot.whisper(settings.op, `${username}: ${res}`));
       }
-
-      translateText(message.toString(), language).then((res) => {
-        sendText(res.toString());
-      })
-        .catch((err) => {
-          bot.whisper(settings.op, err.toString());
-        });
     }
   })
 }
