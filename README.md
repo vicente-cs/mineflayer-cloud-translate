@@ -34,8 +34,8 @@ GOOGLE_APPLICATION_CREDENTIALS = <CREDENTIALS FILEPATH>
 
 ```js
 const mineflayer = require("mineflayer")
-require('dotenv').config();
 const translator = require("mineflayer-cloud-translate")
+require('dotenv').config();
 
 const bot = mineflayer.createBot({
   host: process.env.HOST,
@@ -66,14 +66,16 @@ Cloud Translation uses [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_I
 - `.translateall (true/false)` if true, translates all incoming text
 - `.translatelist (add/remove) <player>` If ".translateall" is false, only players on translatelist will have their messages translated to op's language
 
-Once the bot is on, every op message, except commands, will be translated to the server language.
+Once the plugin is on, every op message, except commands, will be translated to the server language.
 
 ## Test
 
 ### On .env
 
 ```
-MINECRAFT_USERNAME = <YOUR MINECRAFT USERNAME >
+MINECRAFT_USERNAME = <YOUR MINECRAFT USERNAME>
+HOST = <SERVER IP>
+PORT = <SERVER PORT>
 ```
 
 ## Author
